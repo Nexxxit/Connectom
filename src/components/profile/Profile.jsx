@@ -1,13 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PencilIcon from "../../icons/pencil.svg?react";
 
 export default function Profile() {
-  const [userData, setUserData] = useState({
-    first_name: "Имя",
-    last_name: "Фамилия",
-    username: "@guest",
-  });
-
+  const [userData, setUserData] = useState(null);
   const [photoUrl, setPhotoUrl] = useState(null);
 
   const handlePhotoUpload = (event) => {
@@ -17,6 +12,32 @@ export default function Profile() {
       setPhotoUrl(imageUrl);
     }
   };
+
+  const getUserData = () => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const data = {
+          first_name: "Имя",
+          last_name: "Фамилия",
+          username: "@guest",
+        };
+
+        const randomFail = Math.random() < 0.2;
+
+        if (randomFail) {
+          reject(new Error("Не удалось загрузить пользователя"));
+        } else {
+          resolve(data);
+        }
+      }, 2000);
+    });
+  };
+
+  useEffect(() => {
+    getUserData()
+      .then(data => setUserData(data))
+      .catch(error => console.log(error));
+  }, [])
 
   return (
     <>
@@ -44,7 +65,13 @@ export default function Profile() {
             <PencilIcon className="w-4 h-4 text-white" />
           </label>
         </div>
-        <p className="text-3xl">{`${userData.first_name} ${userData.last_name}`}</p>
+        {userData ? (
+          <p className="text-3xl">
+          {userData ? `${userData.first_name} ${userData.last_name}` : ""}
+          </p>
+        ) : (
+          <div className="w-2/4 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+        )}
       </div>
     </>
   );
