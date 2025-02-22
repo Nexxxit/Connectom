@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ProfileImage from "../profile_image/Profile_Image";
+import TagsList from "../tags_list/TagsList";
 
 export default function Profile() {
   const [userData, setUserData] = useState(null);
@@ -42,6 +43,7 @@ export default function Profile() {
           <div className="w-2/4 h-10 bg-gray-200 rounded-full animate-pulse"></div>
         )}
       </div>
+      <TagsList />
     </>
   );
 }
