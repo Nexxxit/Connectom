@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 import ThreeDotIcon from "../../icons/three-dots-vertical.svg?react";
+import CheckCircleIcon from "../../icons/check-circle.svg?react";
 
 export default function TagsList() {
   const dropdownRef = useRef([]);
@@ -131,7 +132,7 @@ export default function TagsList() {
             {tagsList.tags.map((tag) => (
               <li
                 key={tag.id}
-                className="flex justify-between items-center relative"
+                className="flex justify-between items-center gap-5 relative"
               >
                 {editingTagId === tag.id ? (
                   <input
@@ -143,7 +144,7 @@ export default function TagsList() {
                       if (e.key === "Escape") handleCancelEdit();
                     }}
                     autoFocus
-                    className="border"
+                    className="border-b pb-0 ps-0 items-center grow focus:outline-0"
                     value={editedTagName}
                   />
                 ) : (
@@ -151,17 +152,17 @@ export default function TagsList() {
                 )}
                 {editingTagId === tag.id ? (
                   <button
-                    className="border"
+                    className="rounded-xl p-2 flex justify-center items-center cursor-pointer"
                     onMouseDown={() => handleSaveEditTag(tag.id, tag.name)}
                   >
-                    сохранить
+                    <CheckCircleIcon className="size-[26px] fill-lime-500" />
                   </button>
                 ) : (
                   <button
                     className="rounded-xl p-2 flex justify-center items-center cursor-pointer"
                     onClick={() => openDropdown(tag.id)}
                   >
-                    <ThreeDotIcon />
+                    <ThreeDotIcon className="size-[26px]" />
                   </button>
                 )}
                 <ul
@@ -174,7 +175,7 @@ export default function TagsList() {
                     openDropdownId === tag.id ? "" : "hidden"
                   }`}
                 >
-                  <li className="w-full hover:bg-gray-200 p-3 rounded-t-xl">
+                  <li className="w-full hover:bg-gray-200 p-3 rounded-t-xl active:bg-gray-300">
                     <button
                       onClick={() => handleEditTag(tag.id, tag.name)}
                       className="w-full cursor-pointer"
@@ -182,7 +183,7 @@ export default function TagsList() {
                       Редактировать
                     </button>
                   </li>
-                  <li className="w-full hover:bg-gray-200 p-3 rounded-b-xl">
+                  <li className="w-full hover:bg-gray-200 p-3 rounded-b-xl active:bg-gray-300">
                     <button
                       onClick={() => handleDeleteTag(tag.id)}
                       className="w-full cursor-pointer"
