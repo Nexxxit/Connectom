@@ -1,11 +1,14 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import ThreeDotIcon from "../../icons/three-dots-vertical.svg?react";
 
 export default function TagsList() {
   const dropdownRef = useRef([]);
+  const inputRef = useRef(null);
   const [userTags, setUserTags] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editingTagId, setEditingTagId] = useState(null);
+  const [editedTagName, setEditedTagName] = useState("");
 
   const openDropdown = (id) => {
     setOpenDropdownId(id);
@@ -13,8 +16,8 @@ export default function TagsList() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      const isOutside = dropdownRef.current.every((refElement) => 
-        refElement && !refElement.contains(event.target)
+      const isOutside = dropdownRef.current.every(
+        (refElement) => refElement && !refElement.contains(event.target)
       );
 
       if (isOutside) {
@@ -90,7 +93,34 @@ export default function TagsList() {
 
     dropdownRef.current = dropdownRef.current.filter((refElement) => {
       return refElement.id !== id;
-    })
+    });
+  };
+
+  const handleEditTag = (id, name) => {
+    setEditingTagId(id);
+    setEditedTagName(name);
+    setOpenDropdownId(null);
+  };
+
+  const handleSaveEditTag = (id, name) => {
+    if (editedTagName.trim() === name) {
+      setEditingTagId(null);
+      return;
+    }
+
+    setUserTags((prevTags) =>
+      prevTags.map((category) => ({
+        ...category,
+        tags: category.tags.map((tag) =>
+          tag.id === id ? { ...tag, name: editedTagName.trim() } : tag
+        ),
+      }))
+    );
+    setEditingTagId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTagId(null);
   };
 
   const tagsLists = userTags
@@ -103,13 +133,37 @@ export default function TagsList() {
                 key={tag.id}
                 className="flex justify-between items-center relative"
               >
-                <p>{tag.name}</p>
-                <button
-                  className="rounded-xl p-2 flex justify-center items-center cursor-pointer"
-                  onClick={() => openDropdown(tag.id)}
-                >
-                  <ThreeDotIcon />
-                </button>
+                {editingTagId === tag.id ? (
+                  <input
+                    onChange={(e) => setEditedTagName(e.target.value)}
+                    onBlur={handleCancelEdit}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter")
+                        handleSaveEditTag(tag.id, tag.name);
+                      if (e.key === "Escape") handleCancelEdit();
+                    }}
+                    autoFocus
+                    className="border"
+                    value={editedTagName}
+                  />
+                ) : (
+                  <p>{tag.name}</p>
+                )}
+                {editingTagId === tag.id ? (
+                  <button
+                    className="border"
+                    onMouseDown={() => handleSaveEditTag(tag.id, tag.name)}
+                  >
+                    сохранить
+                  </button>
+                ) : (
+                  <button
+                    className="rounded-xl p-2 flex justify-center items-center cursor-pointer"
+                    onClick={() => openDropdown(tag.id)}
+                  >
+                    <ThreeDotIcon />
+                  </button>
+                )}
                 <ul
                   ref={(element) => {
                     if (element !== null) {
@@ -121,7 +175,10 @@ export default function TagsList() {
                   }`}
                 >
                   <li className="w-full hover:bg-gray-200 p-3 rounded-t-xl">
-                    <button className="w-full cursor-pointer">
+                    <button
+                      onClick={() => handleEditTag(tag.id, tag.name)}
+                      className="w-full cursor-pointer"
+                    >
                       Редактировать
                     </button>
                   </li>
