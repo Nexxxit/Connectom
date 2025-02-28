@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import ThreeDotIcon from "../../icons/three-dots-vertical.svg?react";
 
 export default function TagsList() {
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef([]);
   const [userTags, setUserTags] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,11 @@ export default function TagsList() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      const isOutside = dropdownRef.current.every((refElement) => 
+        refElement && !refElement.contains(event.target)
+      );
+
+      if (isOutside) {
         setOpenDropdownId(null);
       }
     };
@@ -76,6 +80,19 @@ export default function TagsList() {
       .catch((error) => console.log(error));
   }, []);
 
+  const handleDeleteTag = (id) => {
+    setUserTags((prevTags) =>
+      prevTags.map((category) => ({
+        ...category,
+        tags: category.tags.filter((tag) => tag.id !== id),
+      }))
+    );
+
+    dropdownRef.current = dropdownRef.current.filter((refElement) => {
+      return refElement.id !== id;
+    })
+  };
+
   const tagsLists = userTags
     ? userTags.map((tagsList) => (
         <div key={tagsList.title}>
@@ -94,7 +111,11 @@ export default function TagsList() {
                   <ThreeDotIcon />
                 </button>
                 <ul
-                  ref={dropdownRef}
+                  ref={(element) => {
+                    if (element !== null) {
+                      dropdownRef.current.push(element);
+                    }
+                  }}
                   className={`absolute right-0 mt-30 w-34 shadow-sm bg-white z-1 rounded-xl flex flex-col items-center justify-center ${
                     openDropdownId === tag.id ? "" : "hidden"
                   }`}
@@ -105,7 +126,12 @@ export default function TagsList() {
                     </button>
                   </li>
                   <li className="w-full hover:bg-gray-200 p-3 rounded-b-xl">
-                    <button className="w-full cursor-pointer">Удалить</button>
+                    <button
+                      onClick={() => handleDeleteTag(tag.id)}
+                      className="w-full cursor-pointer"
+                    >
+                      Удалить
+                    </button>
                   </li>
                 </ul>
               </li>
