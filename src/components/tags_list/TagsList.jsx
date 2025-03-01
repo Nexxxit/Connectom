@@ -4,7 +4,6 @@ import CheckCircleIcon from "../../icons/check-circle.svg?react";
 
 export default function TagsList() {
   const dropdownRef = useRef([]);
-  const inputRef = useRef(null);
   const [userTags, setUserTags] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [loading, setLoading] = useState(true);

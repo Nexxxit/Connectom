@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ProfileImage from "../profile_image/Profile_Image";
 import TagsList from "../tags_list/TagsList";
+import PrivateSettings from "../private_settings/PrivateSettings";
 
 export default function Profile() {
   const [userData, setUserData] = useState(null);
@@ -33,7 +34,7 @@ export default function Profile() {
 
   return (
     <>
-      <div className="flex gap-4 items-center py-4">
+      <div className="flex gap-4 items-center pt-4 pb-9">
         <ProfileImage />
         {userData ? (
           <p className="text-3xl">
@@ -43,7 +44,10 @@ export default function Profile() {
           <div className="w-2/4 h-10 bg-gray-200 rounded-full animate-pulse"></div>
         )}
       </div>
-      <TagsList />
+      <div className="flex flex-col gap-5">
+        <TagsList />
+        <PrivateSettings />
+      </div>
     </>
   );
 }
